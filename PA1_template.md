@@ -1,11 +1,6 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: Pedro A. Alonso Baigorri
-date: 22/05/2017
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Pedro A. Alonso Baigorri  
+22/05/2017  
 ## Introduction
 This document describes the analysis done for the 1st practice of the Reproducible Research Course, part of the Data Science specialization in course.
 
@@ -13,17 +8,25 @@ The objectives of the exercice are described in the README.md file on this repos
 
 
 ## Setting global options
-```{r global_options, include=FALSE}
-knitr::opts_chunk$set(fig.width=12, fig.height=8, fig.path='figure/',
-                      echo=TRUE, warning=FALSE, message=FALSE)
-```
+
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 setwd('.')
 unzip("activity.zip")
 steps_dataset <- read.csv("activity.csv")
 head(steps_dataset)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 ## Histogram of the total number of steps taken each day
@@ -31,12 +34,27 @@ The purpose of the histogram is to know what's the frecuency (number of days) wh
 
 To do this I will calculate first the total number of the steps by day and then plot an histogram using the hist() function.
 
-```{r}
+
+```r
 steps_by_day <- aggregate(steps ~ date, data = steps_dataset, FUN = sum )
 head(steps_by_day)
-hist(steps_by_day$steps, breaks=30, col=c("red"), xlab = "Number of steps", main =" Histogram of the total number of steps taken each day")
+```
 
 ```
+##         date steps
+## 1 2012-10-02   126
+## 2 2012-10-03 11352
+## 3 2012-10-04 12116
+## 4 2012-10-05 13294
+## 5 2012-10-06 15420
+## 6 2012-10-07 11015
+```
+
+```r
+hist(steps_by_day$steps, breaks=30, col=c("red"), xlab = "Number of steps", main =" Histogram of the total number of steps taken each day")
+```
+
+![](figure/unnamed-chunk-2-1.png)<!-- -->
 
 ## What is the mean and median of  total number of steps taken per day?
 
