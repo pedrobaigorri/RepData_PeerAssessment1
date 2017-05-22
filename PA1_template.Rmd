@@ -39,7 +39,11 @@ hist(steps_by_day$steps, breaks=30, col=c("red"), xlab = "Number of steps", main
 ```
 
 ## What is the mean and median of  total number of steps taken per day?
-
+```{r results="hide"}
+mean_steps <- mean(steps_by_day$steps)
+median_steps <- median(steps_by_day$steps)
+```
+The mean is `r mean_steps` and the median is `r median_steps`
 
 
 ## What is the average daily activity pattern?
