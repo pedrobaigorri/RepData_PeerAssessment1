@@ -58,14 +58,61 @@ hist(steps_by_day$steps, breaks=30, col=c("red"), xlab = "Number of steps", main
 
 ## What is the mean and median of  total number of steps taken per day?
 
+Using the agreggated data calculated before, the mean and the median can be calculated as follows:
+
+
 ```r
 mean_steps <- mean(steps_by_day$steps)
 median_steps <- median(steps_by_day$steps)
 ```
-The mean is 1.0766189\times 10^{4}and the median is 10765
+
+This provides the following results:  
+  
+- Mean = 1.0766189\times 10^{4}  
+- Median = 10765
 
 
 ## What is the average daily activity pattern?
+To analyze the average daily activity pattern first of all I will make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+
+```r
+steps_by_interval <- aggregate(steps ~ interval, data = steps_dataset, FUN = mean )
+head(steps_by_interval)
+```
+
+```
+##   interval     steps
+## 1        0 1.7169811
+## 2        5 0.3396226
+## 3       10 0.1320755
+## 4       15 0.1509434
+## 5       20 0.0754717
+## 6       25 2.0943396
+```
+
+```r
+plot(steps_by_interval$interval, steps_by_interval$steps,  ylab = "Average of steps", xlab = "interval", type = "l", main = "Daily activity pattern")
+```
+
+![](figure/unnamed-chunk-4-1.png)<!-- -->
+
+Now I'll calculate the maximum value and  interval when this maximum number happens
+
+```r
+max_steps <- max(steps_by_interval$steps)
+
+id_max_interval <- which(steps_by_interval$steps == max_steps)
+max_interval <- steps_by_interval[max(id_max_interval), "interval"]
+
+#another way to calculate the max_interval
+max_interval <- steps_by_interval[steps_by_interval$steps==max_steps,"interval"]
+```
+
+The max avg steps are: 206.1698113.  
+The interval when the max avg step happens is: 835
+
+
 
 
 
