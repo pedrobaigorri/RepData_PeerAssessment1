@@ -23,6 +23,7 @@ knitr::opts_chunk$set(fig.width=12, fig.height=8, fig.path='figure/',
 setwd('.')
 unzip("activity.zip")
 steps_dataset <- read.csv("activity.csv")
+steps_dataset$dateformat <- as.Date(steps_dataset$date, "%Y-%m-%d")
 head(steps_dataset)
 ```
 
@@ -97,7 +98,8 @@ head(intervals_by_day)
 We can see that there is always the same value NAs for each day: `r nas_by_day[1, "count"]`, and it's the same of the total number of intervals per day.
 `r intervals_by_day[1, "count"]`.  This demonstrates that there are not single missing values inside the days, only full days with all the intervals missing.
 
-So, to imput missing values to the missing days , I can assign for each missing day the average of the rest of the days per each interval.
+So, to imput missing values to the missing days , I can assign for each missing 
+day the average of the rest of the days per each interval.
 
 ```{r}
 steps_dataset_clean <- steps_dataset
@@ -112,7 +114,8 @@ Now calculate the histogram, mean and median with the new data:
 ```{r}
 steps_by_day <- aggregate(steps ~ date, data = steps_dataset_clean, FUN = sum )
 head(steps_by_day)
-hist(steps_by_day$steps, breaks=30, col=c("red"), xlab = "Number of steps", main =" Histogram of the total number of steps taken each day (imputting missing values)")
+hist(steps_by_day$steps, breaks=30, col=c("red"), xlab = "Number of steps", 
+     main =" Histogram of the total number of steps taken each day (imputting missing values)")
 
 
 mean_steps_clean <- mean(steps_by_day$steps)
@@ -133,3 +136,27 @@ This provides the following results:
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+First, I'll create a new factor variable in the dataset with two levels - 
+"weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+```{r}
+steps_dataset_clean$wday <- weekdays(steps_dataset_clean$dateformat)
+steps_dataset_clean$weekend <- ifelse((steps_dataset_clean$wday == "sábado") | 
+                                          (steps_dataset_clean$wday == "domingo"), "WEEKEND", "WORKDAY")
+```
+
+Then I'll make a panel plot containing a time series plot (i.e. type = "l") of 
+the 5-minute interval (x-axis) and the average number of steps taken, averaged 
+across all weekday days or weekend days (y-axis)
+
+```{r}
+steps_by_interval_weekend<- aggregate(steps ~ interval + weekend, 
+                                    data = steps_dataset_clean, FUN = mean )
+head(steps_by_interval_weekend)
+
+plot(steps_by_interval_weekend$interval, steps_by_interval_weekend$steps,  
+     ylab = "Average of steps", xlab = "interval", type = "l", main = "Daily activity pattern")
+
+
+```
