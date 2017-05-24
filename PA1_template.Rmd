@@ -77,11 +77,59 @@ The max avg steps are: `r max_steps`.
 The interval when the max avg step happens is: `r max_interval`
 
 
-
-
-
 ## Imputing missing values
+Now I wll analyze the impact of missing values in the dataset. To do this first of all I'll calculate the total number of NA's in the dataset and how they are distributed.
 
+```{r}
+# calculation of number of intervals with NA's per day
+nas <- steps_dataset[is.na(steps_dataset$steps),]
+nas$count <- 0
+head(nas)
+nas_by_day <- aggregate(count ~ date, data = nas, FUN = length )
+print(nas_by_day)
+
+# calculation of number of total intervals with or without NA's per day
+steps_dataset$count <- 0
+intervals_by_day <- aggregate(count ~ date, data = steps_dataset, FUN = length )
+head(intervals_by_day)
+```
+
+We can see that there is always the same value NAs for each day: `r nas_by_day[1, "count"]`, and it's the same of the total number of intervals per day.
+`r intervals_by_day[1, "count"]`.  This demonstrates that there are not single missing values inside the days, only full days with all the intervals missing.
+
+So, to imput missing values to the missing days , I can assign for each missing day the average of the rest of the days per each interval.
+
+```{r}
+steps_dataset_clean <- steps_dataset
+steps_dataset_clean[is.na(steps_dataset$steps), "steps"] <- as.integer(steps_by_interval$steps)
+head(steps_dataset_clean)
+
+
+
+```
+
+Now calculate the histogram, mean and median with the new data: 
+```{r}
+steps_by_day <- aggregate(steps ~ date, data = steps_dataset_clean, FUN = sum )
+head(steps_by_day)
+hist(steps_by_day$steps, breaks=30, col=c("red"), xlab = "Number of steps", main =" Histogram of the total number of steps taken each day (imputting missing values)")
+
+
+mean_steps_clean <- mean(steps_by_day$steps)
+median_steps_clean <- median(steps_by_day$steps)
+```
+
+This provides the following results:  
+
+(With imputation)
+  
+- Mean = `r mean_steps_clean`  
+- Median = `r median_steps_clean`
+
+(Without imputation)
+  
+- Mean = `r mean_steps`  
+- Median = `r median_steps`
 
 
 ## Are there differences in activity patterns between weekdays and weekends?

@@ -113,11 +113,122 @@ The max avg steps are: 206.1698113.
 The interval when the max avg step happens is: 835
 
 
-
-
-
 ## Imputing missing values
+Now I wll analyze the impact of missing values in the dataset. To do this first of all I'll calculate the total number of NA's in the dataset and how they are distributed.
 
+
+```r
+# calculation of number of intervals with NA's per day
+nas <- steps_dataset[is.na(steps_dataset$steps),]
+nas$count <- 0
+head(nas)
+```
+
+```
+##   steps       date interval count
+## 1    NA 2012-10-01        0     0
+## 2    NA 2012-10-01        5     0
+## 3    NA 2012-10-01       10     0
+## 4    NA 2012-10-01       15     0
+## 5    NA 2012-10-01       20     0
+## 6    NA 2012-10-01       25     0
+```
+
+```r
+nas_by_day <- aggregate(count ~ date, data = nas, FUN = length )
+print(nas_by_day)
+```
+
+```
+##         date count
+## 1 2012-10-01   288
+## 2 2012-10-08   288
+## 3 2012-11-01   288
+## 4 2012-11-04   288
+## 5 2012-11-09   288
+## 6 2012-11-10   288
+## 7 2012-11-14   288
+## 8 2012-11-30   288
+```
+
+```r
+# calculation of number of total intervals with or without NA's per day
+steps_dataset$count <- 0
+intervals_by_day <- aggregate(count ~ date, data = steps_dataset, FUN = length )
+head(intervals_by_day)
+```
+
+```
+##         date count
+## 1 2012-10-01   288
+## 2 2012-10-02   288
+## 3 2012-10-03   288
+## 4 2012-10-04   288
+## 5 2012-10-05   288
+## 6 2012-10-06   288
+```
+
+We can see that there is always the same value NAs for each day: 288, and it's the same of the total number of intervals per day.
+288.  This demonstrates that there are not single missing values inside the days, only full days with all the intervals missing.
+
+So, to imput missing values to the missing days , I can assign for each missing day the average of the rest of the days per each interval.
+
+
+```r
+steps_dataset_clean <- steps_dataset
+steps_dataset_clean[is.na(steps_dataset$steps), "steps"] <- as.integer(steps_by_interval$steps)
+head(steps_dataset_clean)
+```
+
+```
+##   steps       date interval count
+## 1     1 2012-10-01        0     0
+## 2     0 2012-10-01        5     0
+## 3     0 2012-10-01       10     0
+## 4     0 2012-10-01       15     0
+## 5     0 2012-10-01       20     0
+## 6     2 2012-10-01       25     0
+```
+
+Now calculate the histogram, mean and median with the new data: 
+
+```r
+steps_by_day <- aggregate(steps ~ date, data = steps_dataset_clean, FUN = sum )
+head(steps_by_day)
+```
+
+```
+##         date steps
+## 1 2012-10-01 10641
+## 2 2012-10-02   126
+## 3 2012-10-03 11352
+## 4 2012-10-04 12116
+## 5 2012-10-05 13294
+## 6 2012-10-06 15420
+```
+
+```r
+hist(steps_by_day$steps, breaks=30, col=c("red"), xlab = "Number of steps", main =" Histogram of the total number of steps taken each day (imputting missing values)")
+```
+
+![](figure/unnamed-chunk-8-1.png)<!-- -->
+
+```r
+mean_steps_clean <- mean(steps_by_day$steps)
+median_steps_clean <- median(steps_by_day$steps)
+```
+
+This provides the following results:  
+
+(With imputation)
+  
+- Mean = 1.074977\times 10^{4}  
+- Median = 10641
+
+(Without imputation)
+  
+- Mean = 1.0766189\times 10^{4}  
+- Median = 10765
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
