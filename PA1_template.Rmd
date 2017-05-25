@@ -155,8 +155,18 @@ steps_by_interval_weekend<- aggregate(steps ~ interval + weekend,
                                     data = steps_dataset_clean, FUN = mean )
 head(steps_by_interval_weekend)
 
-plot(steps_by_interval_weekend$interval, steps_by_interval_weekend$steps,  
-     ylab = "Average of steps", xlab = "interval", type = "l", main = "Daily activity pattern")
+library(ggplot2)
+
+ggplot(data = steps_by_interval_weekend, aes(x=interval, y=steps, group=weekend)) +
+    geom_line(aes(color=weekend)) + 
+    facet_wrap(~ weekend, nrow = 2 ) +
+    ylab("Average of steps") + 
+    xlab("Interval") +
+    ggtitle("Differences in activity patterns between weekdays and weekends") +
+    theme(legend.position="none")
 
 
 ```
+The plot shows how the patterns are very different betweek weekends and workdays.   
+
+During the workdays there the maximum of the steps are mainly during the first hours in the morning while during the weekends the steps are more distributed along all the day.
